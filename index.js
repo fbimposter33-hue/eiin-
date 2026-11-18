@@ -1,6 +1,12 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const https = require('https');
 const app = express();
+
+// মেয়াদোত্তীর্ণ এসএসএল সার্টিফিকেট ইগ্নোর করার জন্য এজেন্ট
+const agent = new https.Agent({
+    rejectUnauthorized: false
+});
 
 // ইমেজ URL তৈরির হেল্পার ফাংশন
 function buildImageUrl(oldPath, empId) {
@@ -41,9 +47,13 @@ app.get('/', async (req, res) => {
     }
 
     try {
-        // ১) হেড/প্রিন্সিপাল ফেচ করা (GET)
+        // ১) হেড/প্রিন্সিপাল ফেচ করা (GET) [agent সহ]
         const urlHead = `https://apps.emis.gov.bd:9701/api/public/hrm/emp-info/get-head-by-institute-id/0/${eiin}/0`;
-        const headRes = await fetch(urlHead, { method: 'GET', headers: commonHeaders });
+        const headRes = await fetch(urlHead, { 
+            method: 'GET', 
+            headers: commonHeaders,
+            agent: agent 
+        });
         const headData = await headRes.json();
 
         if (headData && headData.data && Array.isArray(headData.data)) {
@@ -55,7 +65,7 @@ app.get('/', async (req, res) => {
             });
         }
 
-        // ২) সম্পূর্ণ এমপ্লয়ি লিস্ট ফেচ করা (PUT)
+        // ২) সম্পূর্ণ এমপ্লয়ি লিস্ট ফেচ করা (PUT) [agent সহ]
         const urlList = `https://apps.emis.gov.bd:9701/api/public/hrm/emp-info/get-pageable-emp-list-by-institute`;
         const listBody = JSON.stringify({
             listIntParam1: [],
@@ -70,7 +80,8 @@ app.get('/', async (req, res) => {
         const listRes = await fetch(urlList, {
             method: 'PUT',
             headers: commonHeaders,
-            body: listBody
+            body: listBody,
+            agent: agent
         });
         const listData = await listRes.json();
 
