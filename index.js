@@ -47,7 +47,7 @@ app.get('/', async (req, res) => {
     }
 
     try {
-        // ১) হেড/প্রিন্সিপাল ফেচ করা (GET) [agent সহ]
+        // ১) হেড/প্রিন্সিপাল ফেচ করা (GET)
         const urlHead = `https://apps.emis.gov.bd:9701/api/public/hrm/emp-info/get-head-by-institute-id/0/${eiin}/0`;
         const headRes = await fetch(urlHead, { 
             method: 'GET', 
@@ -65,15 +65,15 @@ app.get('/', async (req, res) => {
             });
         }
 
-        // ২) সম্পূর্ণ এমপ্লয়ি লিস্ট ফেচ করা (PUT) [agent সহ]
+        // ২) সম্পূর্ণ এমপ্লয়ি লিস্ট ফেচ করা (PUT) - আপডেট করা বডি প্যারামিটার
         const urlList = `https://apps.emis.gov.bd:9701/api/public/hrm/emp-info/get-pageable-emp-list-by-institute`;
         const listBody = JSON.stringify({
             listIntParam1: [],
             page: 0,
             size: 1000,
-            searchValue: '',
-            intParam1: null,
-            intParam2: 1,
+            searchValue: "",
+            intParam1: 0,
+            intParam2: 0, // এখানে 0 দিয়ে ফিক্স করা হয়েছে যাতে এমপ্লয়ি লিস্ট ফেচ হয়
             stringParam1: eiin
         });
 
